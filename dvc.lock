@@ -1,0 +1,138 @@
+schema: '2.0'
+stages:
+  data:
+    cmd: python -m src.pipelines.data_pipeline
+    deps:
+    - path: src\config\config.yaml
+      hash: md5
+      md5: e5fe068d35ca49732c6a3c612dd0a416
+      size: 186
+    - path: src\data\raw\student_productivity_distraction.csv
+      hash: md5
+      md5: 4b41a3264bbc58aeefa36befd85186fd
+      size: 147675
+    - path: src\pipelines\data_pipeline.py
+      hash: md5
+      md5: 9f65844f8d894fe4ea8cf3cae442a2b1
+      size: 1363
+    - path: src\utilities\utilites.py
+      hash: md5
+      md5: b99658e40a2c14d53ba32d9b58dcd904
+      size: 423
+    outs:
+    - path: src/data/processed
+      hash: md5
+      md5: b08c9a2f96d83e1293b4962d980710a5.dir
+      size: 668861
+      nfiles: 4
+  spliting:
+    cmd: python -m src.pipelines.splitter
+    deps:
+    - path: src\config\config.yaml
+      hash: md5
+      md5: 89127305912343ec59d42ab02ffa719f
+      size: 280
+    - path: src\data\raw\student_productivity_distraction.csv
+      hash: md5
+      md5: 4b41a3264bbc58aeefa36befd85186fd
+      size: 147675
+    - path: src\pipelines\splitter.py
+      hash: md5
+      md5: fa9ae69e77c90b7ecf6079e6c6f26b2b
+      size: 868
+  splitting:
+    cmd: python -m src.pipelines.splitter
+    deps:
+    - path: src\config\config.yaml
+      hash: md5
+      md5: 14579c6b27696a3e10ea6bc0785379ed
+      size: 304
+    - path: src\data\raw\student_productivity_distraction.csv
+      hash: md5
+      md5: 4b41a3264bbc58aeefa36befd85186fd
+      size: 147675
+    - path: src\pipelines\splitter.py
+      hash: md5
+      md5: ccf658b6d8ab8f8530b8b2d5f5c168b4
+      size: 940
+    outs:
+    - path: src/data/splitted/X_df.csv
+      hash: md5
+      md5: 20b4815abbb87f3a584bc742b450b99f
+      size: 104335
+    - path: src/data/splitted/y_df.csv
+      hash: md5
+      md5: dca1b2ef1cbf0756199f9fcf6a5800bd
+      size: 29438
+  feature_selecting:
+    cmd: python -m src.pipelines.Feature_selector
+    deps:
+    - path: src/data/splitted/X_df.csv
+      hash: md5
+      md5: 20b4815abbb87f3a584bc742b450b99f
+      size: 104335
+    - path: src/data/splitted/y_df.csv
+      hash: md5
+      md5: dca1b2ef1cbf0756199f9fcf6a5800bd
+      size: 29438
+    - path: src\config\config.yaml
+      hash: md5
+      md5: 14579c6b27696a3e10ea6bc0785379ed
+      size: 304
+    - path: src\pipelines\Feature_selector.py
+      hash: md5
+      md5: 6dbeb523fd5d064a93c225c83ef8c6c8
+      size: 1206
+    - path: src\utilities\utilites.py
+      hash: md5
+      md5: 9a27fa7b6d75a91163389b05c899ab6c
+      size: 1013
+    outs:
+    - path: src/data/selected/Selected_X.csv
+      hash: md5
+      md5: 20b4815abbb87f3a584bc742b450b99f
+      size: 104335
+    - path: src/data/selected/Selected_y.csv
+      hash: md5
+      md5: dca1b2ef1cbf0756199f9fcf6a5800bd
+      size: 29438
+  preprocessing:
+    cmd: python -m src.pipelines.preprocessor
+    deps:
+    - path: src/data/selected/Selected_X.csv
+      hash: md5
+      md5: 20b4815abbb87f3a584bc742b450b99f
+      size: 104335
+    - path: src/data/selected/Selected_y.csv
+      hash: md5
+      md5: dca1b2ef1cbf0756199f9fcf6a5800bd
+      size: 29438
+    - path: src\config\config.yaml
+      hash: md5
+      md5: 14579c6b27696a3e10ea6bc0785379ed
+      size: 304
+    - path: src\pipelines\preprocessor.py
+      hash: md5
+      md5: 94b6421ac3188c24b41248ccc2c914b7
+      size: 1623
+    - path: src\utilities\utilites.py
+      hash: md5
+      md5: 9a27fa7b6d75a91163389b05c899ab6c
+      size: 1013
+    outs:
+    - path: src/data/processed/X_test_proced.csv
+      hash: md5
+      md5: dfed8241284994a8f7d9663093c6f33e
+      size: 117567
+    - path: src/data/processed/X_train_proced.csv
+      hash: md5
+      md5: b615211febc058585ac0105e85e4143c
+      size: 473692
+    - path: src/data/processed/y_test_proced.csv
+      hash: md5
+      md5: 2288bb4acca2ea970c3233e595023ca3
+      size: 5901
+    - path: src/data/processed/y_train_proced.csv
+      hash: md5
+      md5: 6598a58aabfad3d9f5a2db9655d4aa93
+      size: 23542

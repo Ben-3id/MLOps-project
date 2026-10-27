@@ -1,0 +1,14 @@
+
+
+data:
+  raw_path: data/raw/student_productivity_distraction.csv
+  splitted_data_path : data/splitted
+  selected_data_path : data/selected
+  processed_data_path : data/processed
+  target: GPA
+  ignored_col : Student_ID
+  test_size: 0.2
+  random_state: 42
+  shuffle: True
+  threshold: 0.1
+

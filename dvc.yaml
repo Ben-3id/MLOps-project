@@ -1,0 +1,51 @@
+stages:
+
+  splitting:
+    cmd: python -m src.pipelines.splitter
+    deps:
+    - src\pipelines\splitter.py
+    - src\config\config.yaml
+    - src\data\raw\student_productivity_distraction.csv
+    outs:
+    - src/data/splitted/X_df.csv
+    - src/data/splitted/y_df.csv
+
+  feature_selecting:
+    cmd: python -m src.pipelines.Feature_selector
+    deps:
+    - src\pipelines\Feature_selector.py
+    - src\config\config.yaml
+    - src\utilities\utilites.py
+    - src/data/splitted/X_df.csv
+    - src/data/splitted/y_df.csv
+    outs:
+    - src/data/selected/Selected_X.csv
+    - src/data/selected/Selected_y.csv
+
+  preprocessing:
+    cmd: python -m src.pipelines.preprocessor
+    deps:
+    - src\pipelines\preprocessor.py
+    - src\config\config.yaml
+    - src\utilities\utilites.py
+    - src/data/selected/Selected_X.csv
+    - src/data/selected/Selected_y.csv
+    outs:
+    - src/data/processed/X_train_proced.csv
+    - src/data/processed/X_test_proced.csv
+    - src/data/processed/y_train_proced.csv
+    - src/data/processed/y_test_proced.csv
+
+
+  training:
+    cmd: uv run python -m src.models.model_pipe
+    deps:
+    - src\models\model_pipe.py
+    - src\config\config.yaml
+    - src\utilities\utilites.py
+    - src\models\train.py
+    - src\models\models.py
+    - src/data/processed/X_train_proced.csv
+    - src/data/processed/X_test_proced.csv
+    - src/data/processed/y_train_proced.csv
+    - src/data/processed/y_test_proced.csv
