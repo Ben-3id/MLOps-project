@@ -17,8 +17,10 @@ def main():
     if not os.path.exists(dist_path):
         os.makedirs(dist_path)
 
-        
-    data = pd.read_csv(os.path.join(root_path , config['data']['raw_path'])).drop(columns=[config['data']['ignored_col']])
+    data = pd.read_csv(os.path.join(root_path , config['data']['raw_path']))
+
+    if config['data']['ignored_col'] != None:
+        data.drop(columns=[config['data']['ignored_col']] , inplace=True)
 
     X = data.drop(columns=[config['data']['target']])
     

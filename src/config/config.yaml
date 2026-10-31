@@ -1,14 +1,91 @@
 
 
 data:
-  raw_path: data/raw/student_productivity_distraction.csv
+  raw_path: data/raw/Student_Performance.csv
   splitted_data_path : data/splitted
   selected_data_path : data/selected
   processed_data_path : data/processed
-  target: GPA
-  ignored_col : Student_ID
+  target: Performance Index
+  ignored_col : 
+  category_cols: [Extracurricular Activities]
   test_size: 0.2
   random_state: 42
   shuffle: True
   threshold: 0.1
 
+models:
+  RANSACRegressor:
+    min_samples: [0.5, 0.75, 0.9]
+    residual_threshold: [null, 5.0, 10.0, 20.0]
+    stop_probability: [0.95, 0.99]
+
+  Ridge:
+    alpha: [0.01, 0.1, 1.0, 10.0, 100.0]
+    fit_intercept: [true, false]
+    solver: ["auto", "svd", "cholesky", "lsqr"]
+
+  RidgeCV:
+    alphas:
+      - [0.001, 0.01, 0.1, 1.0, 10.0, 100.0]
+    fit_intercept: [true, false]
+    scoring: ["r2", "neg_mean_squared_error"]
+
+  Lasso:
+    alpha: [0.0001, 0.001, 0.01, 0.1, 1.0]
+    fit_intercept: [true, false]
+    selection: ["cyclic", "random"]
+    max_iter: [5000, 10000]
+
+  LassoCV:
+    alphas:
+      - [0.0001, 0.001, 0.01, 0.1, 1.0]
+    cv: [3, 5, 10]
+    fit_intercept: [true, false]
+    max_iter: [5000, 10000]
+    selection: ["cyclic", "random"]
+
+  DecisionTreeRegressor:
+    criterion: ["squared_error", "poisson", "absolute_error"]
+    max_depth: [null, 3, 5, 10, 20]
+    min_samples_split: [2, 5, 10, 20]
+    min_samples_leaf: [1, 2, 4, 8]
+    max_features: [null, "sqrt", "log2"]
+    ccp_alpha: [0.0, 0.001, 0.01]
+
+  ExtraTreeRegressor:
+    criterion: ["squared_error", "absolute_error", "squared_error"]
+    max_depth: [null, 3, 5, 10, 20]
+    min_samples_split: [2, 5, 10, 20]
+    min_samples_leaf: [1, 2, 4, 8]
+    max_features: [null, "sqrt", "log2"]
+    ccp_alpha: [0.0, 0.001, 0.01]
+
+  GradientBoostingRegressor:
+    loss: ["squared_error", "absolute_error", "huber"]
+    learning_rate: [0.01, 0.03, 0.05, 0.1]
+    n_estimators: [50, 100, 200, 300]
+    max_depth: [2, 3, 4, 5]
+    min_samples_split: [2, 5, 10]
+    min_samples_leaf: [1, 2, 4]
+    subsample: [0.6, 0.8, 1.0]
+    max_features: [null, "sqrt", "log2"]
+
+  RandomForestRegressor:
+    n_estimators: [100, 200, 300]
+    max_depth: [null, 5, 10, 20]
+    min_samples_split: [2, 5, 10]
+    min_samples_leaf: [1, 2, 4]
+    bootstrap: [true]
+    max_samples: [0.7, 0.8, 0.9, null]
+
+  AdaBoostRegressor:
+    n_estimators: [50, 100, 200, 300]
+    learning_rate: [0.01, 0.05, 0.1, 0.5, 1.0]
+    loss: ["linear", "square", "exponential"]
+
+  BaggingRegressor:
+    n_estimators: [10, 50, 100, 200]
+    max_samples: [0.5, 0.7, 1.0]
+    max_features: [0.5, 0.7, 1.0]
+    bootstrap: [true, false]
+    bootstrap_features: [true, false]

@@ -5,7 +5,7 @@ stages:
     deps:
     - src\pipelines\splitter.py
     - src\config\config.yaml
-    - src\data\raw\student_productivity_distraction.csv
+    - src\data/raw/Student_Performance.csv
     outs:
     - src/data/splitted/X_df.csv
     - src/data/splitted/y_df.csv

@@ -41,13 +41,13 @@ def main():
     if not os.path.exists(dist_path):
         os.makedirs(dist_path)
 
-    X_train_proced  = Preprocess(X_train ,y_train )
+    X_train_proced  = Preprocess(X_train ,y_train , Category =config['data']['category_cols'])
 
     X_train_proced.to_csv(os.path.join(dist_path , "X_train_proced.csv"),index= False)
     
     y_train.to_csv(os.path.join(dist_path , "y_train_proced.csv"),index= False)
 
-    X_test_proced   = Preprocess(X_test ,y_test)
+    X_test_proced   = Preprocess(X_test ,y_test , Category = config['data']['category_cols'])
 
     X_test_proced.to_csv(os.path.join(dist_path , "X_test_proced.csv") ,index= False)
     

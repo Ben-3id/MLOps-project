@@ -7,6 +7,7 @@ from ..settings import load_config
 from pathlib import Path
 import os
 import pandas as pd
+from sklearn.model_selection import RandomizedSearchCV
 
 def get_data(cfg):
 
@@ -35,14 +36,36 @@ def get_data(cfg):
 def train(
         X : DataFrame ,
         y :  DataFrame| Series,
-        Model : RegressorMixin,
-        params : Optional[Dict[str | Any]] = {} ) -> RegressorMixin:
+        Model : RegressorMixin ) -> RegressorMixin:
 
-    Model.set_params(**params)
     
     Model.fit(X , y)
 
     return Model
+
+
+def train_RS(
+        X : DataFrame ,
+        y :  DataFrame| Series,
+        Model : RegressorMixin ,
+        params : Dict) -> RegressorMixin:
+    
+    search = RandomizedSearchCV(
+        estimator=Model,
+        param_distributions=params,
+        n_iter=20,
+        scoring="neg_root_mean_squared_error",
+        cv=5,
+        random_state=42,
+        n_jobs=-1,
+        refit=True,
+        error_score="raise",
+    )
+    
+    
+    search.fit(X , y)
+
+    return search.best_estimator_
 
 
 def eval(
