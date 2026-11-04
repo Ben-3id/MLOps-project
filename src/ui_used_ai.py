@@ -1,38 +1,8 @@
-import mlflow
+
 import streamlit as st
-import pandas as pd
-import joblib
-from settings import load_config
-from sklearn.pipeline import Pipeline , make_pipeline
-from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import StandardScaler , OneHotEncoder
-from pandas import DataFrame
-from typing import List
+import requests
 
-
-cfg =  load_config()
-
-
-def Preprocess(Category:List , X:DataFrame , y:DataFrame = None ) -> DataFrame :
-    """ ## Inputs
-    `X` ,`y` Prepare them For Training 
-    ## outputs 
-    X_train , y """
-    num_pipeline = make_pipeline( StandardScaler() )
-    category_pipeline = make_pipeline( OneHotEncoder(drop="if_binary", sparse_output=False,handle_unknown="ignore") )
-
-    category_columns = Category
-    num_columns = X.columns.difference(category_columns).tolist()
-
-    pipes = ColumnTransformer(transformers=[
-        ("num pipe" , num_pipeline , num_columns) ,
-        ("category pipe" , category_pipeline , category_columns)
-    ])
-    processor = Pipeline([
-        ( "preprocessor ", pipes) , 
-    ]).set_output(transform="pandas")
-
-    return processor.fit_transform(X)
+API_URL = "http://127.0.0.1:8000"
 
 st.set_page_config(
     page_title="Student Performance Predictor",
@@ -40,22 +10,55 @@ st.set_page_config(
     layout="centered"
 )
 
-@st.cache_resource
-def load_model():
-    return joblib.load("models/model.pkl")
-    return model
-
-
-model = load_model()
-
 st.title("🎓 Student Performance Predictor")
-st.write(
-    "Enter the student's information to predict the Performance Index."
-)
+st.write("Load an MLflow model and predict student performance.")
 
 
+# -------------------------
+# Model Management
+# -------------------------
+
+st.subheader("Model Management")
+
+with st.form("model_form"):
+    model_id = st.text_input("MLflow Run ID")
+    model_name = st.text_input("Artifact Name", value="model")
+
+    load_submitted = st.form_submit_button(
+        "Load Model",
+        use_container_width=True
+    )
+
+if load_submitted:
+    try:
+        response = requests.post(
+            f"{API_URL}/get-model",
+            params={
+                "model_id": model_id,
+                "model_name": model_name
+            },
+            timeout=120
+        )
+
+        response.raise_for_status()
+
+        st.session_state.model_loaded = True
+        st.success("Model loaded successfully!")
+
+    except requests.RequestException as e:
+        st.session_state.model_loaded = False
+        st.error(f"Model loading failed: {e}")
+
+
+# -------------------------
+# Prediction
+# -------------------------
+
+st.divider()
+st.subheader("Student Information")
 
 with st.form("prediction_form"):
+
     hours_studied = st.number_input(
         "Hours Studied",
         min_value=0.0,
@@ -74,7 +77,7 @@ with st.form("prediction_form"):
 
     extracurricular = st.selectbox(
         "Extracurricular Activities",
-        options=["Yes", "No"]
+        ["Yes", "No"]
     )
 
     sleep_hours = st.number_input(
@@ -100,36 +103,32 @@ with st.form("prediction_form"):
 
 
 if submitted:
-    input_data = pd.DataFrame(
-        [{
-            "Hours Studied": hours_studied,
-            "Previous Scores": previous_scores,
-            "Extracurricular Activities": extracurricular,
-            "Sleep Hours": sleep_hours,
-            "Sample Question Papers Practiced": sample_papers,
-        }]
-    )
 
-    # Match the encoding used during training if needed.
-    input_data["Extracurricular Activities"] = (
-        input_data["Extracurricular Activities"]
-        .map({"Yes": "Yes", "No": "No"})
-    )
+    input_data = {
+        "Hours_Studied": hours_studied,
+        "Previous_Scores": previous_scores,
+        "Extracurricular_Activities": extracurricular,
+        "Sleep_Hours": sleep_hours,
+        "Sample_Question_Papers_Practiced": sample_papers
+    }
 
-    try:    
-        category_list = cfg['data']['category_cols']
-        input_data_trans= Preprocess(X= input_data , Category=category_list)
-        prediction = model.predict(input_data_trans)[0]
+    try:
+        response = requests.post(
+            f"{API_URL}/predict",
+            json=input_data,
+            timeout=30
+        )
+
+        response.raise_for_status()
+
+        prediction = response.json()["prediction"]
 
         st.success("Prediction completed successfully!")
+
         st.metric(
             label="Predicted Performance Index",
             value=f"{prediction:.2f}"
         )
 
-    except Exception as e:
+    except requests.RequestException as e:
         st.error(f"Prediction failed: {e}")
-        st.info(
-            "Make sure the model expects these feature names "
-            "and the same preprocessing used during training."
-        )

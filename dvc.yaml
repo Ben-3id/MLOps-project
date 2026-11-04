@@ -35,6 +35,7 @@ stages:
     - src/data/processed/X_test_proced.csv
     - src/data/processed/y_train_proced.csv
     - src/data/processed/y_test_proced.csv
+    - src/models/dumps/preprocessor.pkl
 
 
   training:

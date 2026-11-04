@@ -5,10 +5,18 @@ data:
   splitted_data_path : data/splitted
   selected_data_path : data/selected
   processed_data_path : data/processed
-  target: Performance Index
+  target: Performance_Index
   ignored_col : 
-  category_cols: [Extracurricular Activities]
+  category_cols: [Extracurricular_Activities]
+  num_cols:
+  - "Hours_Studied"
+  - "Previous_Scores"
+  - "Sleep_Hours"
+  - "Sample_Question_Papers_Practiced"
+
   test_size: 0.2
+  pipeline_path: src/models/dumps/
+  pipeline_name: preprocessor.pkl
   random_state: 42
   shuffle: True
   threshold: 0.1
