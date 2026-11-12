@@ -1,18 +1,30 @@
 
 
 data:
-  raw_path: data/raw/Student_Performance.csv
+  raw_path: data/raw/bank-full.csv
   splitted_data_path : data/splitted
   selected_data_path : data/selected
   processed_data_path : data/processed
-  target: Performance_Index
+  target: y
   ignored_col : 
-  category_cols: [Extracurricular_Activities]
-  num_cols:
-  - "Hours_Studied"
-  - "Previous_Scores"
-  - "Sleep_Hours"
-  - "Sample_Question_Papers_Practiced"
+  category_cols:
+  - "job"	
+  - "marital"	
+  - "education"	
+  - "default"	
+  - "housing"	
+  - "loan"	
+  - "contact"
+  - "month"
+  - "poutcome"	
+  num_cols: 						
+  - "age"
+  - "balance"
+  - "day"
+  - "duration"
+  - "campaign"
+  - "pdays"
+  - "previous"
 
   test_size: 0.2
   pipeline_path: src/models/dumps/
