@@ -34,7 +34,6 @@ def get_models(cfg):
         "LogisticRegression": LogisticRegression(),
         "RidgeClassifier": RidgeClassifier(),
         "SGDClassifier": SGDClassifier(),
-        "Perceptron": Perceptron(),
 
         "DecisionTreeClassifier": DecisionTreeClassifier(),
         "ExtraTreeClassifier": ExtraTreeClassifier(),
@@ -48,12 +47,8 @@ def get_models(cfg):
         "HistGradientBoostingClassifier": HistGradientBoostingClassifier(),
 
         "SVC": SVC(),
-        "LinearSVC": LinearSVC(),
 
         "KNeighborsClassifier": KNeighborsClassifier(),
-
-        "GaussianNB": GaussianNB(),
-        "BernoulliNB": BernoulliNB(),
     }
 
     model_dict = {}
