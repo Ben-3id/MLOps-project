@@ -8,12 +8,24 @@ logger = logging.getLogger("uvicorn")
 
 
 from pydantic import BaseModel
-class StudentInput(BaseModel):
-    Hours_Studied: float
-    Previous_Scores: float
-    Extracurricular_Activities: str
-    Sleep_Hours: float
-    Sample_Question_Papers_Practiced: int
+
+class CustomerInput(BaseModel):
+    age: int
+    job: str
+    marital: str
+    education: str
+    default: str
+    balance: int
+    housing: str
+    loan: str
+    contact: str
+    day: int
+    month: str
+    duration: int
+    campaign: int
+    pdays: int
+    previous: int
+    poutcome: str
 
 api_route = APIRouter()
 
@@ -25,13 +37,12 @@ def welcome():
 
 
 @api_route.post("/predict")
-def predict(input:StudentInput , req:Request):
+def predict(input:CustomerInput, req:Request):
 
     data = input.model_dump()
     df = pd.DataFrame([data])
 
-    processor = Preprocess(cfg)
-    example = processor.transform(df)
+    example = req.app.processor.transform(df)
     prediction = req.app.model.predict(example)
     return {
         "prediction": prediction.tolist()[0]

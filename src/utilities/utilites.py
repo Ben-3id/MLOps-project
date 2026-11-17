@@ -8,6 +8,24 @@ import joblib
 import os
 import glob
 from pathlib import Path
+import subprocess
+import time
+import webbrowser
+
+
+def run_ui(src_path):
+
+    process = subprocess.Popen(
+        ["uv", "run", "streamlit", "run", "ui_used_ai.py"],
+        cwd=src_path,
+        creationflags=subprocess.CREATE_NEW_CONSOLE
+    )
+    time.sleep(3)  
+    webbrowser.open("http://localhost:8501")
+
+    return process
+
+
 
 # function to get datasets however their name
 def get_datasets(cfg) -> List:
@@ -89,15 +107,14 @@ class TargetPipeline(BaseEstimator , TransformerMixin):
 
         return self
 
-    def transform(self , X , y):
+    def transform(self , X , y = None):
 
         newX = self.pipeline.transform(X)
-        newy = self.encoder.transform(y)
 
-        return newX , newy
-
-
-
+        if y is not None:
+            newy = self.encoder.transform(y)
+            return newX , newy
+        return newX
 
 
 
@@ -131,7 +148,7 @@ def Create_preprocessor( example ) :
 
 
 class Preprocess(BaseEstimator , TransformerMixin):
-    def __init__( self , cfg , example):
+    def __init__( self , cfg , example=None):
         self.example = example
         self.cfg = cfg
 
@@ -155,6 +172,6 @@ class Preprocess(BaseEstimator , TransformerMixin):
         joblib.dump( self.pipe , self.pipeline_path )
         return self
 
-    def transform(self , X:DataFrame , y:DataFrame):
+    def transform(self , X:DataFrame , y:DataFrame = None):
         return self.pipe.transform(X , y)
 

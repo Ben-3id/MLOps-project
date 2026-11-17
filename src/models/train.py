@@ -1,7 +1,14 @@
 from pandas import DataFrame ,Series
-from sklearn.base import RegressorMixin
+from sklearn.base import  ClassifierMixin
 from typing import Optional , Dict , Any
-from sklearn.metrics import r2_score , mean_squared_error , mean_absolute_error 
+from sklearn.metrics import (
+    accuracy_score,
+    precision_score,
+    recall_score,
+    f1_score,
+    confusion_matrix,
+    classification_report,
+)
 import numpy as np
 from ..settings import load_config
 from pathlib import Path
@@ -36,7 +43,7 @@ def get_data(cfg):
 def train(
         X : DataFrame ,
         y :  DataFrame| Series,
-        Model : RegressorMixin ) -> RegressorMixin:
+        Model : ClassifierMixin ) -> ClassifierMixin:
 
     
     Model.fit(X , y)
@@ -47,14 +54,14 @@ def train(
 def train_RS(
         X : DataFrame ,
         y :  DataFrame| Series,
-        Model : RegressorMixin ,
-        params : Dict) -> RegressorMixin:
+        Model : ClassifierMixin ,
+        params : Dict) -> ClassifierMixin:
     
     search = RandomizedSearchCV(
         estimator=Model,
         param_distributions=params,
         n_iter=20,
-        scoring="neg_root_mean_squared_error",
+        scoring="f1_macro",
         cv=5,
         random_state=42,
         n_jobs=-1,
@@ -71,12 +78,23 @@ def train_RS(
 def eval(
         X : DataFrame ,
         y :  DataFrame| Series,
-        Model : RegressorMixin,   
+        Model : ClassifierMixin,   
 ):
     preds = Model.predict(X)
 
-    r2 = r2_score(y , preds)
-    mae = mean_absolute_error(y,preds)
-    rmse = float(np.sqrt(mean_squared_error(y, preds)))
-
-    return {"R2":r2 , "MAE":mae , "RMSE":rmse}
+    return {
+        "Accuracy": accuracy_score(y, preds),
+        "Precision": precision_score(
+            y, preds, average="weighted", zero_division=0
+        ),
+        "Recall": recall_score(
+            y, preds, average="weighted", zero_division=0
+        ),
+        "F1": f1_score(
+            y, preds, average="weighted", zero_division=0
+        ),
+        "Confusion Matrix": confusion_matrix(y, preds).tolist(),
+        "Classification Report": classification_report(
+            y, preds, zero_division=0
+        ),
+    }

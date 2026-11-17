@@ -52,7 +52,7 @@ Then run the DVC pipeline from the repository root in another terminal:
 uv run dvc repro
 ```
 
-The pipeline writes intermediate data under `src/data/` and the fitted preprocessor to `src/models/dumps/preprocessor.pkl`. Training logs models and evaluations to the MLflow experiment configured in `src/models/model_pipe.py` (`GPA-Predict`). Open `http://127.0.0.1:5000` to view the MLflow UI.
+The pipeline writes intermediate data under `src/data/` and the fitted preprocessor to `src/models/dumps/preprocessor.pkl`. Training logs models and classification evaluations to the MLflow experiment configured in `src/config/config.yaml`. Open `http://127.0.0.1:5000` to view the MLflow UI.
 
 To run only the data-preparation stages, use:
 
@@ -66,7 +66,7 @@ The repository also includes a FastAPI application (`src/main.py`) and a Streaml
 
 ## Current limitations
 
-- The model candidates in `src/models/models.py` are classifiers, but `src/models/train.py` and the MLflow evaluation configuration use regression metrics/types. Review and reconcile this before interpreting training results.
+- The model candidates in `src/models/models.py` and MLflow evaluations use classification metrics. Existing runs logged before this correction still contain regression metrics.
 - `src/config/config.yaml` currently lists regression-model parameter grids, which do not match the classifier names used by the training code.
 - The API/UI input schema is unrelated to the Bank Marketing dataset, as noted above.
 

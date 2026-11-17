@@ -35,7 +35,8 @@ def main():
                 X , y ,
                 test_size = config['data']['test_size'] ,
                 shuffle= config['data']['shuffle'] ,
-                random_state= config['data']['random_state']
+                random_state= config['data']['random_state'] ,
+                stratify= y ,
         )
 
     if not os.path.exists(dist_path):

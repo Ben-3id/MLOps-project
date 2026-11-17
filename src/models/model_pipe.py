@@ -1,14 +1,10 @@
 import mlflow
 import pandas as pd
 from .models import get_models
-from .train import train , eval , get_data , train_RS
+from .train import get_data, train_RS
 from ..settings import load_config
 
 def run_experiment():
-
-    EXPERIMENT_URL = "http://127.0.0.1:5000/"
-    EXPERIMENT_NAME = "GPA-Predict"
-    BEST_METRIC = "R2"
 
     cfg = load_config()
     model_dict = get_models(cfg)
@@ -19,8 +15,8 @@ def run_experiment():
     test_eval_data = X_test.copy()
     test_eval_data["target"] = y_test.to_numpy().ravel()
 
-    mlflow.set_tracking_uri(EXPERIMENT_URL)
-    mlflow.set_experiment(EXPERIMENT_NAME)
+    mlflow.set_tracking_uri(cfg["mlflow"]["tracking_uri"])
+    mlflow.set_experiment(cfg["mlflow"]["experiment_name"])
 
     for model_name , dict in model_dict.items():
 
@@ -44,7 +40,7 @@ def run_experiment():
                     model=model_info.model_uri,
                     data=train_eval_data,
                     targets="target",
-                    model_type="regressor",
+                    model_type="classifier",
                     evaluator_config={
                         "metric_prefix": "train_"
                     },
@@ -57,7 +53,7 @@ def run_experiment():
                     model=model_info.model_uri,
                     data=test_eval_data,
                     targets="target",
-                    model_type="regressor",
+                    model_type="classifier",
                     evaluator_config={
                         "metric_prefix": "test_"
                     },
